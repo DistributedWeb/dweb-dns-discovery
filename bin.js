@@ -27,7 +27,7 @@ if (cmd === 'listen') {
   setInterval(announce, 1000)
 } else {
   console.error(
-    'dweb-dns-discovery [command]\n' +
+    'dns-discovery [command]\n' +
     '  announce [name]\n' +
     '    --port=(port)\n' +
     '    --host=(optional host)\n' +

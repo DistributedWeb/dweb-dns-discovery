@@ -1,4 +1,4 @@
-var discovery = require('dweb-dns-discovery')
+var discovery = require('dns-discovery')
 
 var disc1 = discovery()
 var disc2 = discovery()

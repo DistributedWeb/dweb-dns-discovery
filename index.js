@@ -4,7 +4,7 @@ var util = require('util')
 var crypto = require('crypto')
 var network = require('network-address')
 var multicast = require('multicast-dns')
-var debug = require('debug')('dweb-dns-discovery')
+var debug = require('debug')('dns-discovery')
 var store = require('./store')
 
 var IPv4 = /^\d{1,3}\.\d{1,3}\.\d{1,3}.\d{1,3}$/
@@ -30,7 +30,7 @@ function DNSDiscovery (opts) {
   this._sockets = []
   this._onsocket(this.socket)
 
-  this.multicast = opts.multicast !== false ? multicast() : null
+  this.multicast = opts.multicast !== false ? (isMulticaster(opts.multicast) ? opts.multicast : multicast()) : null
   if (this.multicast) {
     this.multicast.on('query', onmulticastquery)
     this.multicast.on('response', onmulticastresponse)
@@ -40,7 +40,7 @@ function DNSDiscovery (opts) {
   this._loopback = !!opts.loopback
   this._listening = false
   this._id = crypto.randomBytes(32).toString('base64')
-  this._domain = opts.domain || 'dweb-dns-discovery.local'
+  this._domain = opts.domain || 'dns-discovery.local'
   this._pushDomain = 'push.' + this._domain
   this._tokens = new Array(this.servers.length)
   this._tokensAge = []
@@ -162,7 +162,7 @@ DNSDiscovery.prototype._onmulticastquery = function (query, port, host) {
 
   if (reply.answers.length) {
     this.emit('traffic', 'out:multicastresponse', {message: reply})
-    this.multicast.response(reply)
+    this.multicast.response(reply, {port: port})
   }
 }
 
@@ -211,9 +211,10 @@ DNSDiscovery.prototype._onanswer = function (answer, port, host, socket) {
     }
 
     if (!this._listening) {
-      debug('Received TXT answer when not listening, discarding')
       return
     }
+
+    // We are in server mode now. Add the record to the cache
 
     if (!tokenMatch) {
       // check if old token matches
@@ -273,6 +274,8 @@ DNSDiscovery.prototype._push = function (id, port, host, socket) {
 DNSDiscovery.prototype._onquestion = function (query, port, host, answers, multicast) {
   var domain = parseDomain(query.name)
 
+  if (domain !== this._domain) return
+
   if (query.type === 'TXT' && domain === query.name) {
     debug('Replying state-info via TXT to %s:%s', host, port)
     answers.push({
@@ -290,7 +293,7 @@ DNSDiscovery.prototype._onquestion = function (query, port, host, answers, multi
 
   var id = parseId(query.name, domain)
   if (!id) {
-    debug('Invalid ID in answer, discarding', { name: query.name, domain: domain, host: host, port: port })
+    debug('Invalid ID in question, discarding', { name: query.name, domain: domain, host: host, port: port })
     return
   }
 
@@ -451,7 +454,7 @@ DNSDiscovery.prototype._visit = function (type, id, port, opts, cb) {
         }]
       }
       this.multicast.query(message, done)
-      self.emit('traffic', 'out:multicastquery', {message: message})
+      this.emit('traffic', 'out:multicastquery', {message: message})
     }
   }
 
@@ -463,6 +466,7 @@ DNSDiscovery.prototype._visit = function (type, id, port, opts, cb) {
   function done (_, res, q, _port, _host) {
     if (res) {
       success = true
+      self.emit('traffic', 'in:response', {message: res, peer: {host: _host, port: _port}})
       try {
         var data = res.answers.length && decodeTxt(res.answers[0].data)
       } catch (err) {
@@ -562,6 +566,7 @@ DNSDiscovery.prototype._probe = function (i, retries, cb) {
 
   function done (_, res, query, port, host) {
     if (res) {
+      self.emit('traffic', 'in:response', {message: res, peer: {host: host, port: port}})
       try {
         var data = res.answers.length && decodeTxt(res.answers[0].data)
       } catch (err) {
@@ -723,4 +728,8 @@ function encodeTxt (data) {
   }
 
   return bufs
+}
+
+function isMulticaster (m) {
+  return typeof m === 'object' && m && typeof m.query === 'function'
 }

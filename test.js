@@ -7,7 +7,7 @@ freePort(function (port) {
     var disc1 = discovery()
     var disc2 = discovery()
     var ns = Math.random().toString(16) + '-' + process.pid
-    var appName = 'dweb-dns-discovery-' + ns
+    var appName = 'dns-discovery-' + ns
 
     disc2.on('peer', function (name, peer) {
       disc1.destroy()
@@ -241,7 +241,7 @@ freePort(function (port) {
     var client2 = discovery({server: 'localhost:' + port})
     var client1 = discovery({server: 'localhost:' + port})
     var ns = Math.random().toString(16) + '-' + process.pid
-    var appName = 'dweb-dns-discovery-' + ns
+    var appName = 'dns-discovery-' + ns
     var missing = 2
 
     server.on('peer', function (name, peer) {

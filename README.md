@@ -1,17 +1,17 @@
-# dweb-dns-discovery
+# dns-discovery
 
 Discovery peers in a distributed system using regular dns and multicast dns.
 
 ```
-npm install dweb-dns-discovery
+npm install dns-discovery
 ```
 
-[![build status](http://img.shields.io/travis/mafintosh/dweb-dns-discovery.svg?style=flat)](http://travis-ci.org/mafintosh/dweb-dns-discovery)
+[![build status](http://img.shields.io/travis/mafintosh/dns-discovery.svg?style=flat)](http://travis-ci.org/mafintosh/dns-discovery)
 
 ## Usage
 
 ``` js
-var discovery = require('dweb-dns-discovery')
+var discovery = require('dns-discovery')
 
 var disc1 = discovery()
 var disc2 = discovery()
@@ -36,7 +36,7 @@ Create a new discovery instance. Options include:
   ttl: someSeconds, // ttl for records in seconds. defaults to Infinity.
   limit: someLimit, // max number of records stored. defaults to 10000.
   multicast: true, // use multicast-dns. defaults to true.
-  domain: 'my-domain.com', // top-level domain to use for records. defaults to dweb-dns-discovery.local
+  domain: 'my-domain.com', // top-level domain to use for records. defaults to dns-discovery.local
   socket: someUdpSocket, // use this udp socket as the client socket
   loopback: false // discover yourself over multicast
 }
@@ -144,42 +144,42 @@ Emitted when networking errors occur, such as failures to bind the socket (EACCE
 There is a cli tool available as well
 
 ``` sh
-npm install -g dweb-dns-discovery
-dweb-dns-discovery help
+npm install -g dns-discovery
+dns-discovery help
 ```
 
 To announce a service do
 
 ``` sh
 # will announce test-app over multicast-dns
-dweb-dns-discovery announce test-app --port=8080
+dns-discovery announce test-app --port=8080
 ```
 
 To look it up
 
 ``` sh
 # will print services when they are found
-dweb-dns-discovery lookup test-app
+dns-discovery lookup test-app
 ```
 
 To run a discovery server
 
 ``` sh
 # listen for services and store them with a ttl of 30s
-dweb-dns-discovery listen --port=9090 --ttl=30
+dns-discovery listen --port=9090 --ttl=30
 ```
 
 And to announce to that discovery server (and over multicast-dns)
 
 ``` sh
 # replace example.com with the host of the server running the discovery server
-dweb-dns-discovery announce test-app --server=example.com:9090 --port=9090
+dns-discovery announce test-app --server=example.com:9090 --port=9090
 ```
 
 And finally to lookup using that discovery server (and multicast-dns)
 
 ``` sh
-dweb-dns-discovery lookup test-app --server=example.com:9090
+dns-discovery lookup test-app --server=example.com:9090
 ```
 
 You can use any other dns client to resolve the records as well. For example using `dig`.
