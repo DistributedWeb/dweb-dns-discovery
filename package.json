@@ -1,12 +1,12 @@
 {
-  "name": "dns-discovery",
-  "version": "6.2.3",
+  "name": "dweb-dns-discovery",
+  "version": "1.0.0",
   "description": "Discovery peers in a distributed system using regular dns and multicast dns.",
   "main": "index.js",
   "dependencies": {
     "circular-append-file": "^1.0.1",
     "debug": "^2.6.9",
-    "dns-socket": "^3.0.0",
+    "dweb-dns-socket": "git://github.com/DistributedWeb/dweb-dns-socket.git#bac51f681afff989a5e6414c16883ab438d06d99",
     "lru": "^2.0.0",
     "minimist": "^1.2.0",
     "multicast-dns": "^7.1.1",
@@ -20,19 +20,19 @@
     "tape": "^4.9.0"
   },
   "bin": {
-    "dns-discovery": "./bin.js"
+    "dweb-dns-discovery": "./bin.js"
   },
   "scripts": {
     "test": "standard && tape test.js"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/mafintosh/dns-discovery.git"
+    "url": "https://github.com/distributedweb/dweb-dns-discovery.git"
   },
   "author": "Mathias Buus (@mafintosh)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/mafintosh/dns-discovery/issues"
+    "url": "https://github.com/distributedweb/dweb-dns-discovery/issues"
   },
-  "homepage": "https://github.com/mafintosh/dns-discovery"
+  "homepage": "https://github.com/distributedweb/dweb-dns-discovery"
 }
