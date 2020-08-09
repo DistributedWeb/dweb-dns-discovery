@@ -1,10 +1,10 @@
-var dns = require('dns-socket')
+var dns = require('dweb-dns-socket')
 var events = require('events')
 var util = require('util')
 var crypto = require('crypto')
 var network = require('network-address')
 var multicast = require('multicast-dns')
-var debug = require('debug')('dns-discovery')
+var debug = require('debug')('dweb-dns-discovery')
 var store = require('./store')
 
 var IPv4 = /^\d{1,3}\.\d{1,3}\.\d{1,3}.\d{1,3}$/
@@ -40,7 +40,7 @@ function DNSDiscovery (opts) {
   this._loopback = !!opts.loopback
   this._listening = false
   this._id = crypto.randomBytes(32).toString('base64')
-  this._domain = opts.domain || 'dns-discovery.local'
+  this._domain = opts.domain || 'dweb-dns-discovery.local'
   this._pushDomain = 'push.' + this._domain
   this._tokens = new Array(this.servers.length)
   this._tokensAge = []
